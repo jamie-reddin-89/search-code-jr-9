@@ -51,8 +51,9 @@ export async function getAllDevices(): Promise<DeviceWithBrand[]> {
       .select("*");
 
     if (modelsError) {
-      const mErrMsg = (modelsError as any)?.message ?? JSON.stringify(modelsError);
-      throw new Error(`Error querying 'models' table: ${mErrMsg}`);
+      const errorMsg = formatSupabaseError(modelsError, 'models');
+      console.error("Error fetching devices - models query:", errorMsg);
+      throw new Error(errorMsg);
     }
     if (!models) return [];
 
@@ -61,8 +62,9 @@ export async function getAllDevices(): Promise<DeviceWithBrand[]> {
       .select("*");
 
     if (brandsError) {
-      const bErrMsg = (brandsError as any)?.message ?? JSON.stringify(brandsError);
-      throw new Error(`Error querying 'brands' table: ${bErrMsg}`);
+      const errorMsg = formatSupabaseError(brandsError, 'brands');
+      console.error("Error fetching devices - brands query:", errorMsg);
+      throw new Error(errorMsg);
     }
 
     const brandMap = new Map(brands?.map((b: any) => [b.id, b]) || []);
@@ -72,9 +74,9 @@ export async function getAllDevices(): Promise<DeviceWithBrand[]> {
       brand: brandMap.get(model.brand_id),
     }));
   } catch (error) {
-    const errMsg = (error as any)?.message ?? JSON.stringify(error, Object.getOwnPropertyNames(error));
+    const errMsg = formatError(error);
     console.error("Error fetching devices:", errMsg, error);
-    return [];
+    throw error;
   }
 }
 
