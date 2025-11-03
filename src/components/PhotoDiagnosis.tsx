@@ -1,4 +1,3 @@
-import { useState } from "react";
 import * as React from "react";
 const { useState } = React;
 import { Camera, Upload, Loader2 } from "lucide-react";

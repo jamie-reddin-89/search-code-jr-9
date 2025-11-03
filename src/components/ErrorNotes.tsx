@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import * as React from "react";
 const { useEffect, useState } = React;
+import * as React from "react";
+const { useEffect, useState } = React;
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";

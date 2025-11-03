@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import * as React from "react";
 const { useState, useEffect } = React;
+import * as React from "react";
+const { useState, useEffect } = React;
 import { Download, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
