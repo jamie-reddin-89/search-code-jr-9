@@ -58,7 +58,8 @@ export async function getAllDevices(): Promise<DeviceWithBrand[]> {
       brand: brandMap.get(model.brand_id),
     }));
   } catch (error) {
-    console.error("Error fetching devices:", error);
+    const errMsg = (error as any)?.message ?? JSON.stringify(error, Object.getOwnPropertyNames(error));
+    console.error("Error fetching devices:", errMsg, error);
     return [];
   }
 }
