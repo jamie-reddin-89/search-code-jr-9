@@ -40,3 +40,21 @@
 .read-the-docs {
   color: #888;
 }
+
+/* Hide scrollbars for dialogs and modals */
+.dialog-content, .modal, .DialogContent, .dialog {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+.dialog-content::-webkit-scrollbar, .modal::-webkit-scrollbar, .DialogContent::-webkit-scrollbar, .dialog::-webkit-scrollbar {
+  display: none; /* Chrome */
+}
+
+/* Slim line mode: reduced padding/margins when enabled via .slim-line on body */
+body.slim-line .page-container {
+  padding-left: 8px;
+  padding-right: 8px;
+}
+body.slim-line .nav-button {
+  padding: 6px 8px;
+}

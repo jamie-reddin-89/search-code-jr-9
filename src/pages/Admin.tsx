@@ -84,8 +84,9 @@ export default function Admin() {
       setDevicesLoading(true);
       const allDevices = await getAllDevices();
       setDevices(allDevices);
-    } catch (error) {
-      console.error("Error loading devices:", error);
+    } catch (error: any) {
+      console.error("Error loading devices:", error?.message ?? JSON.stringify(error, Object.getOwnPropertyNames(error)), error);
+      toast({ title: "Error loading devices", description: error?.message ?? "An unexpected error occurred", variant: "destructive" });
     } finally {
       setDevicesLoading(false);
     }
@@ -255,15 +256,7 @@ export default function Admin() {
           <FilePlus2 size={20} />
           Add Error Info
         </Link>
-        {devices.map((device) => (
-          <Link
-            key={device.id}
-            to={`/${device.brand.name.toLowerCase().replace(/\s+/g, "-")}-${device.name.toLowerCase().replace(/\s+/g, "-")}`}
-            className="nav-button flex items-center justify-center gap-2"
-          >
-            {device.brand.name} {device.name}
-          </Link>
-        ))}
+        {/* Device quick-links removed from Admin dashboard — these belong on the public main UI to avoid cluttering admin controls */}
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <button className="nav-button flex items-center justify-center gap-2" onClick={() => setEditingCode(null)}>

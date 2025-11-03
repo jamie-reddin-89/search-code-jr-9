@@ -36,20 +36,34 @@ export function generateRouteSlug(brandName: string, modelName: string): string 
 /**
  * Get all devices with their brand information
  */
+import { isSupabaseConfigured } from "@/integrations/supabase/client";
+
 export async function getAllDevices(): Promise<DeviceWithBrand[]> {
+  if (!isSupabaseConfigured) {
+    const msg = 'Supabase is not configured (VITE_SUPABASE_URL or VITE_SUPABASE_PUBLISHABLE_KEY missing). Connect Supabase or set the env vars.';
+    console.error("Error fetching devices:", msg);
+    throw new Error(msg);
+  }
+
   try {
     const { data: models, error: modelsError } = await supabase
       .from("models" as any)
       .select("*");
 
-    if (modelsError) throw modelsError;
+    if (modelsError) {
+      const mErrMsg = (modelsError as any)?.message ?? JSON.stringify(modelsError);
+      throw new Error(`Error querying 'models' table: ${mErrMsg}`);
+    }
     if (!models) return [];
 
     const { data: brands, error: brandsError } = await supabase
       .from("brands" as any)
       .select("*");
 
-    if (brandsError) throw brandsError;
+    if (brandsError) {
+      const bErrMsg = (brandsError as any)?.message ?? JSON.stringify(brandsError);
+      throw new Error(`Error querying 'brands' table: ${bErrMsg}`);
+    }
 
     const brandMap = new Map(brands?.map((b: any) => [b.id, b]) || []);
 
@@ -58,7 +72,8 @@ export async function getAllDevices(): Promise<DeviceWithBrand[]> {
       brand: brandMap.get(model.brand_id),
     }));
   } catch (error) {
-    console.error("Error fetching devices:", error);
+    const errMsg = (error as any)?.message ?? JSON.stringify(error, Object.getOwnPropertyNames(error));
+    console.error("Error fetching devices:", errMsg, error);
     return [];
   }
 }

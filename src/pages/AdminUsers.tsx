@@ -65,7 +65,11 @@ export default function AdminUsers() {
         .select("*");
 
       if (profilesError) {
-        console.error("Error loading profiles:", profilesError);
+        const pErrMsg = (profilesError as any)?.message ?? JSON.stringify(profilesError, Object.getOwnPropertyNames(profilesError));
+        console.error("Error loading profiles:", pErrMsg, profilesError);
+        toast({ title: "Error loading profiles", description: (profilesError as any)?.message ?? "An unexpected error occurred while loading profiles.", variant: "destructive" });
+        // Ensure profiles map is empty to avoid undefined lookups
+        setProfiles(new Map());
       }
 
       if (profilesData) {
