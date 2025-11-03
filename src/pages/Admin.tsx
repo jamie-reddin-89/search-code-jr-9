@@ -255,6 +255,15 @@ export default function Admin() {
           <FilePlus2 size={20} />
           Add Error Info
         </Link>
+        {devices.map((device) => (
+          <Link
+            key={device.id}
+            to={`/${device.brand.name.toLowerCase().replace(/\s+/g, "-")}-${device.name.toLowerCase().replace(/\s+/g, "-")}`}
+            className="nav-button flex items-center justify-center gap-2"
+          >
+            {device.brand.name} {device.name}
+          </Link>
+        ))}
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <button className="nav-button flex items-center justify-center gap-2" onClick={() => setEditingCode(null)}>
