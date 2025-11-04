@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Home, ArrowLeft, Plus, Trash2 } from "lucide-react";
 import TopRightControls from "@/components/TopRightControls";
+import { subscribeToMetadata } from "@/lib/deviceManager";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -43,6 +44,12 @@ export default function AdminAddDevice() {
   useEffect(() => {
     loadAllItems();
     loadBrands();
+    const unsubscribe = subscribeToMetadata(() => {
+      // Refresh lists when metadata changes elsewhere
+      loadAllItems();
+      loadBrands();
+    });
+    return () => unsubscribe();
   }, []);
 
   const loadAllItems = async () => {
