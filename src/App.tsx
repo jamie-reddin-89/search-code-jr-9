@@ -5,17 +5,18 @@ import { TooltipProvider as TooltipToggleProvider } from "@/contexts/TooltipCont
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HashRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { Suspense, lazy } from "react";
 import Index from "./pages/Index";
 import Favorites from "./pages/Favorites";
-import Admin from "./pages/Admin";
-import AdminUsers from "./pages/AdminUsers";
-import AdminMessages from "./pages/AdminMessages";
-import AdminAnalytics from "./pages/AdminAnalytics";
-import AdminFixSteps from "./pages/AdminFixSteps";
-import AdminAppLogs from "./pages/AdminAppLogs";
-import AdminAddErrorInfo from "./pages/AdminAddErrorInfo";
-import AdminAddErrorCode from "./pages/AdminAddErrorCode";
-import AdminAddDevice from "./pages/AdminAddDevice";
+const Admin = lazy(() => import("./pages/Admin"));
+const AdminUsers = lazy(() => import("./pages/AdminUsers"));
+const AdminMessages = lazy(() => import("./pages/AdminMessages"));
+const AdminAnalytics = lazy(() => import("./pages/AdminAnalytics"));
+const AdminFixSteps = lazy(() => import("./pages/AdminFixSteps"));
+const AdminAppLogs = lazy(() => import("./pages/AdminAppLogs"));
+const AdminAddErrorInfo = lazy(() => import("./pages/AdminAddErrorInfo"));
+const AdminAddErrorCode = lazy(() => import("./pages/AdminAddErrorCode"));
+const AdminAddDevice = lazy(() => import("./pages/AdminAddDevice"));
 import ButtonPage from "./components/ButtonPage";
 import InstallPrompt from "./components/InstallPrompt";
 import AIAssistant from "./components/AIAssistant";
@@ -56,6 +57,7 @@ const App = () => (
             <HashRouter>
             <AnalyticsListener />
             <SyncBridge />
+            <Suspense fallback={<div className="page-container"><div className="flex items-center justify-center min-h-screen"><p>Loading...</p></div></div>}>
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/favorites" element={<Favorites />} />
@@ -73,6 +75,7 @@ const App = () => (
                 <Route key={index} path={route.path} element={route.element} />
               ))}
             </Routes>
+            </Suspense>
             </HashRouter>
           </ErrorBoundary>
         </TooltipToggleProvider>

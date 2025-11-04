@@ -82,7 +82,7 @@ Phase 9 — Integrations (optional but recommended)
 - [ ] Connect Zapier to route contact_messages to Slack/Email
 
 Phase 10 — Performance and quality
-- [~] Code-split heavy charts/pages; lazy-load — in_progress
+- [x] Code-split heavy charts/pages; lazy-load — completed
 - [ ] Add retry/backoff for logging/analytics writes
 - [ ] Add PWA SW for offline caching of codes and background sync
 - [ ] Fuzzy search in error_codes_db; CSV import/export of error codes
