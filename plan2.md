@@ -1,8 +1,8 @@
 # Implementation Plan (Admin + App-wide Enhancements)
 
 Owner: Admin (jayjay.r@outlook.com)
-Current version (Settings > About): 1.9.8
-Target version after implementation: 1.9.8
+Current version (Settings > About): 1.9.9
+Target version after implementation: 1.9.9
 
 Legend: [ ] pending • [x] complete • [~] partial
 
@@ -44,10 +44,10 @@ Phase 4 — Analytics capture + Admin analytics
 - [~] Optional: record user_sessions/user_activity on login/logout/page views
 
 Phase 5 — UI consistency, themes, scrollbars
-- [ ] Shared classes exist (.nav-button, .home-button, .page-container) (src/index.css)
-- [ ] Audit pages to ensure consistent usage of bg-background/text-foreground/border
-- [ ] Extend global CSS to hide visual scrollbars while allowing scroll for body and scroll regions
-- [ ] Verify light: light background + dark text; dark: dark background + light text; fix outliers
+- [x] Shared classes exist (.nav-button, .home-button, .page-container) (src/index.css)
+- [x] Audit pages to ensure consistent usage of bg-background/text-foreground/border
+- [x] Extend global CSS to hide visual scrollbars while allowing scroll for body and scroll regions
+- [x] Verify light: light background + dark text; dark: dark background + light text; fix outliers
 
 Phase 6 — Dynamic device subpages and per-model codes
 - [x] Add route /device/:slug in src/App.tsx
@@ -90,7 +90,7 @@ Phase 10 — Performance and quality
 - [ ] Add correlation ID to logs/analytics; include device info in analytics meta
 
 Release Tasks
-- [x] Update Settings > About version text to 1.9.7
+- [x] Update Settings > About version text to 1.9.9
 - [ ] Smoke test all admin pages and public views (light/dark)
 - [ ] Verify RLS and permissions with a non-admin account
 

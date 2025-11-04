@@ -104,3 +104,13 @@
          transition-all duration-300 hover:scale-110 hover:border-primary
          focus:outline-none focus:ring-2 focus:ring-primary;
 }
+
+/* Scrollbar styling: hide visual scrollbars while preserving scroll functionality */
+html, body, [class*="overflow"] {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer and Edge */
+}
+
+html::-webkit-scrollbar, body::-webkit-scrollbar, [class*="overflow"]::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, and Opera */
+}
