@@ -48,7 +48,7 @@ export function EnhancedErrorCard({
 }: EnhancedErrorCardProps) {
   const [userId, setUserId] = useState<string | undefined>(undefined);
   const { isFavorite, toggleFavorite } = useFavorites(userId);
-  const { isAdmin } = useUserRole();
+  const { isAdmin, isModerator } = useUserRole();
   const [isOpen, setIsOpen] = useState(false);
   const favorite = isFavorite(systemName, code);
 
