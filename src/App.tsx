@@ -22,6 +22,7 @@ import AIAssistant from "./components/AIAssistant";
 import AdminRoute from "./components/AdminRoute";
 import AnalyticsListener from "./components/AnalyticsListener";
 import SyncBridge from "./components/SyncBridge";
+import DevicePage from "./pages/DevicePage";
 
 const queryClient = new QueryClient();
 
