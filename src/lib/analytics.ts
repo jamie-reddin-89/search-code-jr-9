@@ -74,6 +74,25 @@ export async function trackEvent(
           ts: Date.now(),
         });
         window.localStorage.setItem(key, JSON.stringify(list));
+        // Attempt to register background sync if supported
+        try {
+          if ('serviceWorker' in navigator && 'SyncManager' in window) {
+            const reg = await navigator.serviceWorker.ready;
+            try {
+              await reg.sync.register('sync-analytics');
+            } catch (e) {
+              // registration failed (maybe unsupported), fallback to messaging SW to trigger immediate sync
+              if (navigator.serviceWorker.controller) {
+                navigator.serviceWorker.controller.postMessage('trigger-sync');
+              }
+            }
+          } else if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+            // No SyncManager, ask SW to message clients to do sync
+            navigator.serviceWorker.controller.postMessage('trigger-sync');
+          }
+        } catch (err2) {
+          console.debug('Background sync registration failed:', err2);
+        }
       }
     } catch (err) {
       console.error("Failed to enqueue analytics event:", err);

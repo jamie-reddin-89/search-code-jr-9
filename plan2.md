@@ -84,7 +84,7 @@ Phase 9 — Integrations (optional but recommended)
 Phase 10 — Performance and quality
 - [x] Code-split heavy charts/pages; lazy-load — completed
 - [x] Add retry/backoff for logging/analytics writes
-- [ ] Add PWA SW for offline caching of codes and background sync
+- [x] Add PWA SW for offline caching of codes and background sync
 - [ ] Fuzzy search in error_codes_db; CSV import/export of error codes
 - [ ] Granular RBAC (moderator scope)
 - [ ] Add correlation ID to logs/analytics; include device info in analytics meta
