@@ -70,7 +70,7 @@ About tab
 - [x] Move Contact button to top row actions near title
 
 Phase 8 — Messages admin page
-- [ ] Edge function contact-send sends email; can store to contact_messages with service role
+- [~] Edge function contact-send sends email; can store to contact_messages with service role — in_progress
 - [ ] Create src/pages/AdminMessages.tsx to list contact_messages with filters and details
 - [ ] Add route /admin/messages and nav button in Admin dashboard (src/pages/Admin.tsx)
 - [ ] Add realtime subscription on contact_messages to live-update list
