@@ -70,10 +70,10 @@ About tab
 - [x] Move Contact button to top row actions near title
 
 Phase 8 — Messages admin page
-- [~] Edge function contact-send sends email; can store to contact_messages with service role — in_progress
-- [ ] Create src/pages/AdminMessages.tsx to list contact_messages with filters and details
-- [ ] Add route /admin/messages and nav button in Admin dashboard (src/pages/Admin.tsx)
-- [ ] Add realtime subscription on contact_messages to live-update list
+- [x] Edge function contact-send sends email; can store to contact_messages with service role
+- [x] Create src/pages/AdminMessages.tsx to list contact_messages with filters and details
+- [x] Add route /admin/messages and nav button in Admin dashboard (src/pages/Admin.tsx)
+- [x] Add realtime subscription on contact_messages to live-update list
 
 Phase 9 — Integrations (optional but recommended)
 - [ ] Connect Supabase MCP for DB/auth management and RLS reviews
