@@ -71,8 +71,8 @@ export const TroubleshootingWizard = () => {
   const loadInitialData = async () => {
     try {
       const [brandsResult, categoriesResult] = await Promise.all([
-        supabase.from("brands").select("*").order("name"),
-        supabase.from("categories").select("*").order("name"),
+        supabase.from("public.brands").select("*").order("name"),
+        supabase.from("public.categories").select("*").order("name"),
       ]);
 
       if (brandsResult.data) setBrands(brandsResult.data);
@@ -85,7 +85,7 @@ export const TroubleshootingWizard = () => {
   const loadModels = async (brandId: string) => {
     try {
       const { data } = await supabase
-        .from("models")
+        .from("public.models")
         .select("*")
         .eq("brand_id", brandId)
         .order("name");
