@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Home, ArrowLeft, Users, Shield, Ban, Check, KeyRound, RefreshCw, LogOut } from "lucide-react";
+import { Home, ArrowLeft, Users, Shield, Ban, Check, KeyRound, RefreshCw, LogOut, Plus } from "lucide-react";
 import TopRightControls from "@/components/TopRightControls";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -10,6 +12,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -19,6 +28,7 @@ import {
   unbanUser,
   changeUserRole,
   getAllUsers,
+  createUser,
   type UserStats,
 } from "@/lib/userTracking";
 
