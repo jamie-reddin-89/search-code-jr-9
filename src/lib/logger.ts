@@ -1,4 +1,5 @@
-import { supabase } from "@/integrations/supabase/client";
+import { auth } from '@/services/supabase/auth';
+import { database } from '@/services/supabase/database';
 
 export interface AppLog {
   id: string;
@@ -18,13 +19,11 @@ export async function logInfo(
   meta?: Record<string, any>
 ): Promise<void> {
   try {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const user = await auth.getCurrentUser();
     const { getCorrelationId, getDeviceInfo } = await import("@/lib/correlation");
     const stack = { ...(meta || {}), correlationId: getCorrelationId(), device: getDeviceInfo() };
 
-    await supabase.from("app_logs" as any).insert([
+    await database.from("app_logs").insert([
       {
         level: "info",
         message,
@@ -47,13 +46,11 @@ export async function logWarn(
   meta?: Record<string, any>
 ): Promise<void> {
   try {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const user = await auth.getCurrentUser();
     const { getCorrelationId, getDeviceInfo } = await import("@/lib/correlation");
     const stack = { ...(meta || {}), correlationId: getCorrelationId(), device: getDeviceInfo() };
 
-    await supabase.from("app_logs" as any).insert([
+    await database.from("app_logs").insert([
       {
         level: "warn",
         message,
@@ -77,9 +74,7 @@ export async function logError(
   meta?: Record<string, any>
 ): Promise<void> {
   try {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const user = await auth.getCurrentUser();
 
     const stackTrace = error instanceof Error ? error.stack : String(error);
     const { getCorrelationId, getDeviceInfo } = await import("@/lib/correlation");
@@ -90,7 +85,7 @@ export async function logError(
       device: getDeviceInfo(),
     };
 
-    await supabase.from("app_logs" as any).insert([
+    await database.from("app_logs").insert([
       {
         level: "error",
         message,
@@ -117,8 +112,8 @@ export async function getLogs(filters?: {
   limit?: number;
 }): Promise<AppLog[]> {
   try {
-    let query = supabase
-      .from("app_logs" as any)
+    let query = database
+      .from("app_logs")
       .select("*")
       .order("timestamp", { ascending: false });
 
@@ -156,8 +151,8 @@ export async function getLogs(filters?: {
  */
 export async function searchLogs(searchQuery: string): Promise<AppLog[]> {
   try {
-    const { data, error } = await supabase
-      .from("app_logs" as any)
+    const { data, error } = await database
+      .from("app_logs")
       .select("*")
       .ilike("message", `%${searchQuery}%`)
       .order("timestamp", { ascending: false })
@@ -176,8 +171,8 @@ export async function searchLogs(searchQuery: string): Promise<AppLog[]> {
  */
 export async function deleteLog(logId: string): Promise<boolean> {
   try {
-    const { error } = await supabase
-      .from("app_logs" as any)
+    const { error } = await database
+      .from("app_logs")
       .delete()
       .eq("id", logId);
 
@@ -194,8 +189,8 @@ export async function deleteLog(logId: string): Promise<boolean> {
  */
 export async function clearAllLogs(): Promise<boolean> {
   try {
-    const { error } = await supabase
-      .from("app_logs" as any)
+    const { error } = await database
+      .from("app_logs")
       .delete()
       .gte("timestamp", "1970-01-01");
 
@@ -218,8 +213,8 @@ export async function getLogStats(): Promise<{
   latestLog: AppLog | null;
 }> {
   try {
-    const { data: allLogs, error } = await supabase
-      .from("app_logs" as any)
+    const { data: allLogs, error } = await database
+      .from("app_logs")
       .select("level");
 
     if (error) throw error;
@@ -229,8 +224,8 @@ export async function getLogStats(): Promise<{
     const warnCount = logs.filter((l: any) => l.level === "warn").length;
     const infoCount = logs.filter((l: any) => l.level === "info").length;
 
-    const { data: latest } = await supabase
-      .from("app_logs" as any)
+    const { data: latest } = await database
+      .from("app_logs")
       .select("*")
       .order("timestamp", { ascending: false })
       .limit(1);

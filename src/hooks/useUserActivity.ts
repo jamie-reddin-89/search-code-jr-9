@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { auth } from "@/services/supabase/auth";
 import { trackUserActivity, createUserSession } from "@/lib/userTracking";
 
 let sessionId: string | null = null;
@@ -10,7 +10,7 @@ export function useUserActivity() {
   useEffect(() => {
     // Get current user
     const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await auth.getCurrentUser();
       setCurrentUser(user);
 
       if (user) {
@@ -25,7 +25,7 @@ export function useUserActivity() {
     getUser();
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = auth.onAuthStateChange((_event, session) => {
       setCurrentUser(session?.user || null);
     });
 

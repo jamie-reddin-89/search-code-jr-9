@@ -4,7 +4,8 @@ import { Star, Home } from "lucide-react";
 import TopRightControls from "@/components/TopRightControls";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
+import { auth } from "@/services/supabase/auth";
+import { database } from "@/services/supabase/database";
 import { useToast } from "@/hooks/use-toast";
 
 interface FavoriteItem {
@@ -22,7 +23,7 @@ const Favorites = () => {
 
   useEffect(() => {
     const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await auth.getCurrentUser();
       setUserId(user?.id);
       if (user?.id) {
         loadFavorites(user.id);
@@ -32,7 +33,7 @@ const Favorites = () => {
     };
     getUser();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = auth.onAuthStateChange((_event, session) => {
       setUserId(session?.user?.id);
       if (session?.user?.id) {
         loadFavorites(session.user.id);
@@ -47,7 +48,7 @@ const Favorites = () => {
 
   const loadFavorites = async (uid: string) => {
     try {
-      const { data, error } = await (supabase as any)
+      const { data, error } = await database
         .from("favorites")
         .select("*")
         .eq("user_id", uid)
@@ -69,7 +70,7 @@ const Favorites = () => {
 
   const removeFavorite = async (id: string) => {
     try {
-      const { error } = await (supabase as any)
+      const { error } = await database
         .from("favorites")
         .delete()
         .eq("id", id);

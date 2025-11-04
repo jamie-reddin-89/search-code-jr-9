@@ -1,4 +1,6 @@
-import { supabase } from "@/integrations/supabase/client";
+import { auth } from '@/services/supabase/auth';
+import { database } from '@/services/supabase/database';
+import { functions } from '@/services/supabase/functions';
 
 export interface UserSession {
   id: string;
@@ -39,8 +41,8 @@ export async function createUserSession(userId?: string): Promise<UserSession | 
       screenResolution: `${window.screen.width}x${window.screen.height}`,
     };
 
-    const { data, error } = await supabase
-      .from("user_sessions" as any)
+    const { data, error } = await database
+      .from("user_sessions")
       .insert([
         {
           user_id: userId || null,
@@ -65,8 +67,8 @@ export async function createUserSession(userId?: string): Promise<UserSession | 
  */
 export async function endUserSession(sessionId: string): Promise<boolean> {
   try {
-    const { error } = await supabase
-      .from("user_sessions" as any)
+    const { error } = await database
+      .from("user_sessions")
       .update({ session_end: new Date().toISOString() })
       .eq("id", sessionId);
 
@@ -88,8 +90,8 @@ export async function trackUserActivity(
   meta?: any
 ): Promise<UserActivity | null> {
   try {
-    const { data, error } = await supabase
-      .from("user_activity" as any)
+    const { data, error } = await database
+      .from("user_activity")
       .insert([
         {
           user_id: userId || null,
@@ -106,6 +108,7 @@ export async function trackUserActivity(
     return data;
   } catch (error) {
     console.error("Error tracking user activity:", error);
+    .
     return null;
   }
 }
@@ -116,17 +119,17 @@ export async function trackUserActivity(
 export async function getUserStats(userId: string): Promise<UserStats | null> {
   try {
     const [sessionsResult, activitiesResult, searchAnalyticsResult] = await Promise.all([
-      supabase
-        .from("user_sessions" as any)
+      database
+        .from("user_sessions")
         .select("*")
         .eq("user_id", userId)
         .order("session_start", { ascending: false }),
-      supabase
-        .from("user_activity" as any)
+      database
+        .from("user_activity")
         .select("*")
         .eq("user_id", userId),
-      supabase
-        .from("search_analytics" as any)
+      database
+        .from("search_analytics")
         .select("*")
         .eq("user_id", userId),
     ]);
@@ -183,16 +186,16 @@ export async function getUserStats(userId: string): Promise<UserStats | null> {
  */
 export async function banUser(userId: string): Promise<boolean> {
   try {
-    const { error } = await supabase
-      .from("user_roles" as any)
+    const { error } = await database
+      .from("user_roles")
       .update({ banned: true })
       .eq("user_id", userId);
 
     if (error) throw error;
 
     // End all active sessions
-    const { error: sessionError } = await supabase
-      .from("user_sessions" as any)
+    const { error: sessionError } = await database
+      .from("user_sessions")
       .update({ session_end: new Date().toISOString() })
       .eq("user_id", userId)
       .is("session_end", null);
@@ -211,8 +214,8 @@ export async function banUser(userId: string): Promise<boolean> {
  */
 export async function unbanUser(userId: string): Promise<boolean> {
   try {
-    const { error } = await supabase
-      .from("user_roles" as any)
+    const { error } = await database
+      .from("user_roles")
       .update({ banned: false })
       .eq("user_id", userId);
 
@@ -229,8 +232,8 @@ export async function unbanUser(userId: string): Promise<boolean> {
  */
 export async function changeUserRole(userId: string, role: "admin" | "moderator" | "user"): Promise<boolean> {
   try {
-    const { error } = await supabase
-      .from("user_roles" as any)
+    const { error } = await database
+      .from("user_roles")
       .update({ role })
       .eq("user_id", userId);
 
@@ -247,7 +250,7 @@ export async function changeUserRole(userId: string, role: "admin" | "moderator"
  */
 export async function resetUserPassword(email: string): Promise<boolean> {
   try {
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    const { error } = await auth.resetPasswordForEmail(email, {
       redirectTo: window.location.origin,
     });
 
@@ -265,8 +268,8 @@ export async function resetUserPassword(email: string): Promise<boolean> {
 export async function getAllUsers(): Promise<any[]> {
   try {
     // Fetch user_roles table
-    const { data: userRoles, error: rolesError } = await supabase
-      .from("user_roles" as any)
+    const { data: userRoles, error: rolesError } = await database
+      .from("user_roles")
       .select("*")
       .order("created_at", { ascending: false });
 
@@ -276,8 +279,8 @@ export async function getAllUsers(): Promise<any[]> {
     if (roles.length === 0) return [];
 
     // Fetch profiles to get email and created_at from auth
-    const { data: profiles, error: profilesError } = await supabase
-      .from("profiles" as any)
+    const { data: profiles, error: profilesError } = await database
+      .from("profiles")
       .select("*");
 
     if (profilesError) {
@@ -312,7 +315,7 @@ export async function getAllUsers(): Promise<any[]> {
 export async function getUserWithStats(userId: string): Promise<any | null> {
   try {
     const [userRole, stats] = await Promise.all([
-      supabase.from("user_roles" as any).select("*").eq("user_id", userId).single(),
+      database.from("user_roles").select("*").eq("user_id", userId).single(),
       getUserStats(userId),
     ]);
 
@@ -338,32 +341,15 @@ export async function createUser(
   role: "user" | "moderator" | "admin" = "user"
 ): Promise<{ success: boolean; error?: string; user?: any }> {
   try {
-    const { data: sessionData } = await supabase.auth.getSession();
-    if (!sessionData?.session?.access_token) {
-      return { success: false, error: "Not authenticated" };
-    }
-
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const functionUrl = `${supabaseUrl}/functions/v1/create-user`;
-
-    const response = await fetch(functionUrl, {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${sessionData.session.access_token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email,
-        password,
-        full_name: fullName,
-        role,
-      }),
+    const { data, error } = await functions.invokeFunction('create-user', {
+      email,
+      password,
+      full_name: fullName,
+      role,
     });
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      return { success: false, error: data.error || "Failed to create user" };
+    if (error) {
+      return { success: false, error: error.message || "Failed to create user" };
     }
 
     return { success: true, user: data.user };

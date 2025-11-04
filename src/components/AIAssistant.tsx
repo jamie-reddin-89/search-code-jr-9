@@ -3,7 +3,7 @@ import { Bot, Send, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { functions } from "@/services/supabase/functions";
 
 interface Message {
   role: "user" | "assistant";
@@ -35,11 +35,9 @@ const AIAssistant = ({ systemName, errorCode }: AIAssistantProps) => {
         ? `Context: User is viewing ${systemName} error code ${errorCode}. `
         : "";
 
-      const { data, error } = await supabase.functions.invoke("ai-assistant", {
-        body: {
-          messages: [...messages, userMessage],
-          context,
-        },
+      const { data, error } = await functions.invokeFunction("ai-assistant", {
+        messages: [...messages, userMessage],
+        context,
       });
 
       if (error) throw error;

@@ -11,7 +11,8 @@ import {
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
-import { supabase } from "@/integrations/supabase/client";
+import { auth } from "@/services/supabase/auth";
+import { database } from "@/services/supabase/database";
 import { useToast } from "./ui/use-toast";
 import { Card } from "./ui/card";
 import { format } from "date-fns";
@@ -48,7 +49,7 @@ export const ServiceHistory = () => {
   }, []);
 
   const loadServiceHistory = async () => {
-    const { data, error } = await supabase
+    const { data, error } = await database
       .from("service_history")
       .select("*")
       .order("repair_date", { ascending: false });
@@ -69,7 +70,7 @@ export const ServiceHistory = () => {
     e.preventDefault();
     setIsAddingNew(true);
 
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await auth.getCurrentUser();
     if (!user) {
       toast({
         title: "Authentication required",
@@ -91,7 +92,7 @@ export const ServiceHistory = () => {
         })
       : [];
 
-    const { error } = await supabase.from("service_history").insert({
+    const { error } = await database.from("service_history").insert({
       user_id: user.id,
       system_name: formData.system_name,
       error_code: formData.error_code,
@@ -129,7 +130,7 @@ export const ServiceHistory = () => {
   };
 
   const handleDelete = async (id: string) => {
-    const { error } = await supabase
+    const { error } = await database
       .from("service_history")
       .delete()
       .eq("id", id);

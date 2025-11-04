@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Home, ArrowLeft, Wrench, Plus, Trash2 } from "lucide-react";
 import TopRightControls from "@/components/TopRightControls";
-import { supabase } from "@/integrations/supabase/client";
+import { database } from "@/services/supabase/database";
 
 interface FixStep {
   id: string;
@@ -60,9 +60,9 @@ export default function AdminFixSteps() {
     try {
       setLoading(true);
       const [stepsResult, brandsResult, modelsResult] = await Promise.all([
-        supabase.from("fix_steps").select("*").order("created_at", { ascending: false }),
-        supabase.from("brands").select("*").order("name"),
-        supabase.from("models").select("*").order("name"),
+        database.from("fix_steps").select("*").order("created_at", { ascending: false }),
+        database.from("brands").select("*").order("name"),
+        database.from("models").select("*").order("name"),
       ]);
 
       if (stepsResult.data) setSteps(stepsResult.data);
@@ -95,7 +95,7 @@ export default function AdminFixSteps() {
         updated_at: new Date().toISOString(),
       };
 
-      const { error } = await supabase
+      const { error } = await database
         .from("fix_steps")
         .insert([newStep]);
 
@@ -115,7 +115,7 @@ export default function AdminFixSteps() {
 
   const remove = async (id: string) => {
     try {
-      const { error } = await supabase
+      const { error } = await database
         .from("fix_steps")
         .delete()
         .eq("id", id);

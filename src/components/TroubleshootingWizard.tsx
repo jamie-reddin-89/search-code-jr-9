@@ -11,7 +11,7 @@ import {
 import { Label } from "./ui/label";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Card } from "./ui/card";
-import { supabase } from "@/integrations/supabase/client";
+import { database } from "@/services/supabase/database";
 
 interface Brand {
   id: string;
@@ -71,8 +71,8 @@ export const TroubleshootingWizard = () => {
   const loadInitialData = async () => {
     try {
       const [brandsResult, categoriesResult] = await Promise.all([
-        supabase.from("brands").select("*").order("name"),
-        supabase.from("categories").select("*").order("name"),
+        database.from("brands").select("*").order("name"),
+        database.from("categories").select("*").order("name"),
       ]);
 
       if (brandsResult.data) setBrands(brandsResult.data);
@@ -84,7 +84,7 @@ export const TroubleshootingWizard = () => {
 
   const loadModels = async (brandId: string) => {
     try {
-      const { data } = await supabase
+      const { data } = await database
         .from("models")
         .select("*")
         .eq("brand_id", brandId)
@@ -98,7 +98,7 @@ export const TroubleshootingWizard = () => {
 
   const loadErrorCodes = async (brandId: string, modelId: string) => {
     try {
-      const { data } = await supabase
+      const { data } = await database
         .from("error_codes_db")
         .select("code, meaning, solution, system_name")
         .order("code");

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Home, ArrowLeft, FilePlus2, Save, Trash2 } from "lucide-react";
 import TopRightControls from "@/components/TopRightControls";
-import { supabase } from "@/integrations/supabase/client";
+import { database } from "@/services/supabase/database";
 
 interface ErrorInfo {
   id: string;
@@ -61,13 +61,13 @@ export default function AdminAddErrorInfo() {
     try {
       setLoading(true);
       const [listResult, brandsResult, modelsResult, categoriesResult] = await Promise.all([
-        supabase
+        database
           .from("error_info")
           .select("*")
           .order("created_at", { ascending: false }),
-        supabase.from("brands").select("*").order("name"),
-        supabase.from("models").select("*").order("name"),
-        supabase.from("categories").select("*").order("name"),
+        database.from("brands").select("*").order("name"),
+        database.from("models").select("*").order("name"),
+        database.from("categories").select("*").order("name"),
       ]);
 
       if (listResult.data) setList(listResult.data);
@@ -100,7 +100,7 @@ export default function AdminAddErrorInfo() {
         updated_at: new Date().toISOString(),
       };
 
-      const { error } = await supabase
+      const { error } = await database
         .from("error_info")
         .insert([newInfo]);
 
@@ -116,7 +116,7 @@ export default function AdminAddErrorInfo() {
 
   const remove = async (id: string) => {
     try {
-      const { error } = await supabase
+      const { error } = await database
         .from("error_info")
         .delete()
         .eq("id", id);

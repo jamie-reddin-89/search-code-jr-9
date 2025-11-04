@@ -8,7 +8,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { auth } from "@/services/supabase/auth";
+import { database } from "@/services/supabase/database";
 
 interface PhotoDiagnosisModalProps {
   isOpen: boolean;
@@ -202,9 +203,7 @@ export default function PhotoDiagnosisModal({
     try {
       setSavingPhoto(true);
 
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const user = await auth.getCurrentUser();
 
       // Convert data URL to blob
       const response = await fetch(capturedImage);
@@ -220,8 +219,8 @@ export default function PhotoDiagnosisModal({
       //   .upload(filePath, blob);
 
       // Save metadata to database
-      const { error: dbError } = await supabase
-        .from("diagnostic_photos" as any)
+      const { error: dbError } = await database
+        .from("diagnostic_photos")
         .insert([
           {
             storage_path: filePath,

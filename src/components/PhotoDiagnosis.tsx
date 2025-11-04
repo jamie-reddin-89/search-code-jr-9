@@ -8,7 +8,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
-import { supabase } from "@/integrations/supabase/client";
+import { auth } from "@/services/supabase/auth";
+import { database } from "@/services/supabase/database";
 import { useToast } from "./ui/use-toast";
 import { Card } from "./ui/card";
 
@@ -162,11 +163,11 @@ export const PhotoDiagnosis = () => {
       setAnalysis(mockResult);
       setProgress(100);
 
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await auth.getCurrentUser();
 
       const fileName = `${user?.id || "anonymous"}/${Date.now()}_diagnosis.jpg`;
-      await supabase
-        .from("diagnostic_photos" as any)
+      await database
+        .from("diagnostic_photos")
         .insert({
           user_id: user?.id || null,
           storage_path: fileName,

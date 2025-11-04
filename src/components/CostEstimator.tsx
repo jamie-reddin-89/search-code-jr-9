@@ -11,7 +11,8 @@ import {
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Card } from "./ui/card";
-import { supabase } from "@/integrations/supabase/client";
+import { auth } from "@/services/supabase/auth";
+import { database } from "@/services/supabase/database";
 import { useToast } from "./ui/use-toast";
 
 export const CostEstimator = () => {
@@ -32,7 +33,7 @@ export const CostEstimator = () => {
       parseFloat(formData.labor_rate || "0");
 
   const handleSave = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await auth.getCurrentUser();
     if (!user) {
       toast({
         title: "Authentication required",
@@ -42,7 +43,7 @@ export const CostEstimator = () => {
       return;
     }
 
-    const { error } = await supabase.from("cost_estimates").insert({
+    const { error } = await database.from("cost_estimates").insert({
       user_id: user.id,
       error_code: formData.error_code,
       system_name: formData.system_name,

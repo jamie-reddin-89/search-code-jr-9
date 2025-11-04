@@ -4,7 +4,7 @@ import TopRightControls from "@/components/TopRightControls";
 import { useErrorCodes } from "@/hooks/useErrorCodes";
 import { useDbErrorCodes } from "@/hooks/useDbErrorCodes";
 import { Input } from "./ui/input";
-import { supabase } from "@/integrations/supabase/client";
+import { auth } from "@/services/supabase/auth";
 import { EnhancedErrorCard } from "./EnhancedErrorCard";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { Settings } from "./Settings";
@@ -48,8 +48,8 @@ const ButtonPage = ({ title }: ButtonPageProps) => {
   const { trackSearch } = useAnalytics();
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUserId(session?.user?.id);
+    auth.getCurrentUser().then((user) => {
+      setUserId(user?.id);
     });
   }, []);
   

@@ -15,7 +15,8 @@ import { Separator } from "./ui/separator";
 import { useTheme } from "@/contexts/ThemeContext";
 import { Input } from "./ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { auth } from "@/services/supabase/auth";
+import { database } from "@/services/supabase/database";
 import ContactForm from '@/components/ContactForm';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { getAllDevices, generateRouteSlug } from "@/lib/deviceManager";
@@ -71,9 +72,9 @@ export const Settings = () => {
   useEffect(() => {
     const load = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
+        const user = await auth.getCurrentUser();
         if (user) {
-          const { data: profile } = await supabase.from("profiles" as any).select("full_name, email").eq("id", user.id).single();
+          const { data: profile } = await database.from("profiles").select("full_name, email").eq("id", user.id).single();
           setUsername(profile?.full_name || "");
           setEmail(profile?.email || "");
         }
@@ -108,9 +109,9 @@ export const Settings = () => {
 
   const handleSaveUsername = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await auth.getCurrentUser();
       if (!user) throw new Error("Not signed in");
-      const { error } = await supabase.from("profiles" as any).upsert({ id: user.id, full_name: username }, { returning: "minimal" });
+      const { error } = await database.from("profiles").upsert({ id: user.id, full_name: username }, { returning: "minimal" });
       if (error) throw error;
       toast({ title: "Username updated" });
     } catch (err: any) {
@@ -121,7 +122,7 @@ export const Settings = () => {
   const handleResetPassword = async () => {
     try {
       if (!email) throw new Error("No email available");
-      const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin });
+      const { error } = await auth.resetPasswordForEmail(email, { redirectTo: window.location.origin });
       if (error) throw error;
       toast({ title: "Password reset email sent" });
     } catch (err: any) {
@@ -131,11 +132,11 @@ export const Settings = () => {
 
   const handleExportData = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await auth.getCurrentUser();
       if (!user) throw new Error("Not signed in");
 
-      const { data: favorites } = await supabase.from("favorites" as any).select("*").eq("user_id", user.id);
-      const { data: activity } = await supabase.from("user_activity" as any).select("*").eq("user_id", user.id);
+      const { data: favorites } = await database.from("favorites").select("*").eq("user_id", user.id);
+      const { data: activity } = await database.from("user_activity").select("*").eq("user_id", user.id);
 
       const payload = { favorites: favorites || [], activity: activity || [] };
       const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
@@ -155,11 +156,11 @@ export const Settings = () => {
     const shouldDelete = confirmOnDelete ? confirm("This will delete your profile and sign you out. Are you sure?") : true;
     if (!shouldDelete) return;
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await auth.getCurrentUser();
       if (!user) throw new Error("Not signed in");
-      await supabase.from("user_roles" as any).delete().eq("user_id", user.id);
-      await supabase.from("profiles" as any).delete().eq("id", user.id);
-      await supabase.auth.signOut();
+      await database.from("user_roles").delete().eq("user_id", user.id);
+      await database.from("profiles").delete().eq("id", user.id);
+      await auth.signOut();
       toast({ title: "Account deleted and signed out" });
     } catch (err: any) {
       toast({ title: "Error deleting account", description: err?.message ?? String(err), variant: "destructive" });

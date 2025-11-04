@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Home, ArrowLeft, Code2, Plus, Trash2, Edit2 } from "lucide-react";
 import TopRightControls from "@/components/TopRightControls";
-import { supabase } from "@/integrations/supabase/client";
+import { auth } from "@/services/supabase/auth";
+import { database } from "@/services/supabase/database";
 
 interface ErrorCode {
   id: string;
@@ -46,7 +47,7 @@ export default function AdminAddErrorCode() {
   const loadErrorCodes = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      const { data, error } = await database
         .from("error_codes_db")
         .select("*")
         .order("system_name", { ascending: true })
@@ -75,6 +76,7 @@ export default function AdminAddErrorCode() {
     }
 
     try {
+      const user = await auth.getCurrentUser();
       const payload = {
         code: form.code.toUpperCase(),
         system_name: form.system_name,
@@ -86,13 +88,13 @@ export default function AdminAddErrorCode() {
         video_url: form.video_url || null,
         related_codes: form.related_codes && form.related_codes.length > 0 ? form.related_codes : null,
         troubleshooting_steps: form.troubleshooting_steps || null,
-        created_by: (await supabase.auth.getUser()).data.user?.id || null,
+        created_by: user?.id || null,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
 
       if (editingId) {
-        const { error } = await supabase
+        const { error } = await database
           .from("error_codes_db")
           .update(payload)
           .eq("id", editingId);
@@ -104,7 +106,7 @@ export default function AdminAddErrorCode() {
         );
         setEditingId(null);
       } else {
-        const { error } = await supabase
+        const { error } = await database
           .from("error_codes_db")
           .insert([{ id: form.id, ...payload }]);
 
@@ -136,7 +138,7 @@ export default function AdminAddErrorCode() {
     if (!confirm("Are you sure you want to delete this error code?")) return;
 
     try {
-      const { error } = await supabase
+      const { error } = await database
         .from("error_codes_db")
         .delete()
         .eq("id", id);

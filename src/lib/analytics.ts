@@ -1,4 +1,5 @@
-import { supabase } from "@/integrations/supabase/client";
+import { auth } from '@/services/supabase/auth';
+import { database } from '@/services/supabase/database';
 
 export interface AnalyticsEvent {
   id: string;
@@ -33,9 +34,7 @@ export async function trackEvent(
 ): Promise<void> {
   let deviceId: string | null = null;
   try {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const user = await auth.getCurrentUser();
 
     deviceId =
       typeof window !== "undefined"
@@ -58,7 +57,7 @@ export async function trackEvent(
     ];
 
     // Try with retry/backoff
-    await retryWithBackoff(() => (supabase as any).from("app_analytics" as any).insert(payload), 3, 500);
+    await retryWithBackoff(() => database.from("app_analytics").insert(payload), 3, 500);
   } catch (error) {
     console.error("Failed to track event after retries:", error);
 
@@ -71,10 +70,11 @@ export async function trackEvent(
         const key = "jr_user_events";
         const raw = window.localStorage.getItem(key);
         const list = raw ? JSON.parse(raw) : [];
+        const user = await auth.getCurrentUser();
         // store minimal event representation
         list.push({
           id: `evt_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
-          userId: (await supabase.auth.getUser()).data.user?.id || null,
+          userId: user?.id || null,
           deviceId: deviceId || null,
           type: eventType,
           path: path || (typeof window !== "undefined" ? window.location.pathname : null),
@@ -129,8 +129,8 @@ export async function getAnalyticsStats(filters?: {
   eventType?: string;
 }): Promise<AnalyticsStats> {
   try {
-    let query = supabase
-      .from("app_analytics" as any)
+    let query = database
+      .from("app_analytics")
       .select("*")
       .order("timestamp", { ascending: false });
 
@@ -290,7 +290,7 @@ export async function trackErrorCodeView(
 export function subscribeToAnalytics(
   onNewEvent: (event: AnalyticsEvent) => void
 ): { unsubscribe: () => Promise<void> } {
-  const channel = supabase.channel("analytics-updates", {
+  const channel = database.channel("analytics-updates", {
     config: {
       broadcast: { self: true },
     },
@@ -311,7 +311,7 @@ export function subscribeToAnalytics(
 
   return {
     unsubscribe: async () => {
-      await supabase.removeChannel(channel);
+      await database.removeChannel(channel);
     },
   };
 }

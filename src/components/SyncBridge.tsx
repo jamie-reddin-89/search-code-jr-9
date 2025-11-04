@@ -1,13 +1,13 @@
 import { useEffect } from "react";
 import { syncAll } from "@/lib/supabaseSync";
-import { supabase } from "@/integrations/supabase/client";
+import { auth } from "@/services/supabase/auth";
 
 export default function SyncBridge() {
   useEffect(() => {
     let timer: number | undefined;
     const kick = async () => {
       try {
-        await supabase.auth.getSession();
+        await auth.getSession();
         await syncAll();
       } catch (error) {
         // Silently fail - sync is non-critical

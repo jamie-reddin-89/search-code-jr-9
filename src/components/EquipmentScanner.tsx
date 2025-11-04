@@ -10,7 +10,8 @@ import {
 } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-import { supabase } from "@/integrations/supabase/client";
+import { auth } from "@/services/supabase/auth";
+import { database } from "@/services/supabase/database";
 import { useToast } from "./ui/use-toast";
 import { Card } from "./ui/card";
 
@@ -47,7 +48,7 @@ export const EquipmentScanner = () => {
   }, []);
 
   const loadEquipment = async () => {
-    const { data, error } = await supabase
+    const { data, error } = await database
       .from("equipment")
       .select("*")
       .order("created_at", { ascending: false });
@@ -66,7 +67,7 @@ export const EquipmentScanner = () => {
       return;
     }
 
-    const { data, error } = await supabase
+    const { data, error } = await database
       .from("equipment")
       .select("*")
       .eq("qr_code", searchCode.trim())
@@ -92,7 +93,7 @@ export const EquipmentScanner = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await auth.getCurrentUser();
     if (!user) {
       toast({
         title: "Authentication required",
@@ -102,7 +103,7 @@ export const EquipmentScanner = () => {
       return;
     }
 
-    const { error } = await supabase.from("equipment").insert({
+    const { error } = await database.from("equipment").insert({
       user_id: user.id,
       ...formData,
     });

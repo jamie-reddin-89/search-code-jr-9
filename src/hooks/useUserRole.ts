@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { auth } from "@/services/supabase/auth";
+import { database } from "@/services/supabase/database";
 
 export function useUserRole() {
   const [role, setRole] = useState<"admin" | "moderator" | "user">("user");
@@ -8,15 +9,15 @@ export function useUserRole() {
   useEffect(() => {
     async function checkRole() {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
+        const user = await auth.getCurrentUser();
         if (!user) {
           setRole("user");
           setLoading(false);
           return;
         }
 
-        const { data, error } = await (supabase as any)
-          .from("user_roles" as any)
+        const { data, error } = await database
+          .from("user_roles")
           .select("role")
           .eq("user_id", user.id)
           .limit(1)
@@ -39,7 +40,7 @@ export function useUserRole() {
 
     checkRole();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+    const { data: { subscription } } = auth.onAuthStateChange(() => {
       checkRole();
     });
 

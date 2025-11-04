@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { auth } from "@/services/supabase/auth";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -22,13 +22,13 @@ export function AuthButton() {
   const { isAdmin } = useUserRole();
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
+    auth.getCurrentUser().then((user) => {
+      setUser(user ?? null);
     });
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
     });
 
@@ -37,13 +37,9 @@ export function AuthButton() {
 
   async function handleSignUp(email: string, password: string, fullName: string) {
     try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            full_name: fullName,
-          },
+      const { error } = await auth.signUp(email, password, {
+        data: {
+          full_name: fullName,
         },
       });
 
@@ -65,10 +61,7 @@ export function AuthButton() {
 
   async function handleSignIn(email: string, password: string) {
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const { error } = await auth.signIn(email, password);
 
       if (error) throw error;
 
@@ -87,7 +80,7 @@ export function AuthButton() {
 
   async function handleSignOut() {
     try {
-      const { error } = await supabase.auth.signOut();
+      const { error } = await auth.signOut();
       if (error) throw error;
 
       toast({
