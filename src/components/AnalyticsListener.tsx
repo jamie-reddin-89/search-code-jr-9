@@ -8,27 +8,47 @@ export default function AnalyticsListener() {
 
   useEffect(() => {
     const trackPV = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      await trackEvent("page_view", undefined, location.pathname + location.hash, session?.user?.id || null);
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        await trackEvent("page_view", undefined, location.pathname + location.hash, session?.user?.id || null);
+      } catch (error) {
+        // Silently fail - analytics is non-critical
+        console.debug("Analytics tracking failed (non-critical):", error);
+      }
     };
     trackPV();
   }, [location]);
 
   useEffect(() => {
     const onClick = async (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      const btn = target.closest(".nav-button, button, a") as HTMLElement | null;
-      if (btn) {
-        const label = (btn.getAttribute("aria-label") || btn.textContent || "").trim().slice(0, 100);
-        await trackEvent("element_click", { label });
+      try {
+        const target = e.target as HTMLElement;
+        const btn = target.closest(".nav-button, button, a") as HTMLElement | null;
+        if (btn) {
+          const label = (btn.getAttribute("aria-label") || btn.textContent || "").trim().slice(0, 100);
+          await trackEvent("element_click", { label });
+        }
+      } catch (error) {
+        // Silently fail - analytics is non-critical
+        console.debug("Click tracking failed (non-critical):", error);
       }
     };
     document.addEventListener("click", onClick);
     const onError = (event: ErrorEvent) => {
-      log("Error", event.message, { filename: event.filename, lineno: event.lineno, colno: event.colno });
+      try {
+        log("Error", event.message, { filename: event.filename, lineno: event.lineno, colno: event.colno });
+      } catch (error) {
+        // Silently fail - logging is non-critical
+        console.debug("Error logging failed (non-critical):", error);
+      }
     };
     const onRejection = (event: PromiseRejectionEvent) => {
-      log("Error", String(event.reason));
+      try {
+        log("Error", String(event.reason));
+      } catch (error) {
+        // Silently fail - logging is non-critical
+        console.debug("Error logging failed (non-critical):", error);
+      }
     };
     window.addEventListener("error", onError);
     window.addEventListener("unhandledrejection", onRejection);
