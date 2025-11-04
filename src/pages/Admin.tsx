@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Home, Plus, Edit, Trash2, Users, BarChart3, Wrench, ScrollText, FilePlus2, Package } from "lucide-react";
+import { Home, Plus, Edit, Trash2, Users, BarChart3, Wrench, ScrollText, FilePlus2, Package, Mail } from "lucide-react";
 import TopRightControls from "@/components/TopRightControls";
 import { supabase } from "@/integrations/supabase/client";
 import { useUserRole } from "@/hooks/useUserRole";
