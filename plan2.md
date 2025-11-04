@@ -44,10 +44,10 @@ Phase 4 — Analytics capture + Admin analytics
 - [~] Optional: record user_sessions/user_activity on login/logout/page views
 
 Phase 5 — UI consistency, themes, scrollbars
-- [ ] Shared classes exist (.nav-button, .home-button, .page-container) (src/index.css)
-- [ ] Audit pages to ensure consistent usage of bg-background/text-foreground/border
-- [ ] Extend global CSS to hide visual scrollbars while allowing scroll for body and scroll regions
-- [ ] Verify light: light background + dark text; dark: dark background + light text; fix outliers
+- [x] Shared classes exist (.nav-button, .home-button, .page-container) (src/index.css)
+- [x] Audit pages to ensure consistent usage of bg-background/text-foreground/border
+- [x] Extend global CSS to hide visual scrollbars while allowing scroll for body and scroll regions
+- [x] Verify light: light background + dark text; dark: dark background + light text; fix outliers
 
 Phase 6 — Dynamic device subpages and per-model codes
 - [x] Add route /device/:slug in src/App.tsx
