@@ -310,6 +310,26 @@ export default function AdminUsers() {
                   <div>{selectedUser.email || "-"}</div>
                 </div>
                 <div>
+                  <span className="font-medium">Created:</span>
+                  <div>
+                    {selectedUser.created_at
+                      ? new Date(selectedUser.created_at).toLocaleDateString() +
+                        " " +
+                        new Date(selectedUser.created_at).toLocaleTimeString()
+                      : "-"}
+                  </div>
+                </div>
+                <div>
+                  <span className="font-medium">Last Sign In:</span>
+                  <div>
+                    {selectedUser.last_sign_in_at
+                      ? new Date(selectedUser.last_sign_in_at).toLocaleDateString() +
+                        " " +
+                        new Date(selectedUser.last_sign_in_at).toLocaleTimeString()
+                      : "Never"}
+                  </div>
+                </div>
+                <div>
                   <span className="font-medium">Role:</span>
                   <div className="capitalize">{selectedUser.role}</div>
                 </div>
