@@ -1,7 +1,7 @@
 # Implementation Plan (Admin + App-wide Enhancements)
 
 Owner: Admin (jayjay.r@outlook.com)
-Current version (Settings > About): 1.9.16
+Current version (Settings > About): 1.9.15
 Target version after implementation: 1.9.16
 
 Legend: [ ] pending • [x] complete • [~] partial
@@ -90,8 +90,8 @@ Phase 10 — Performance and quality
 - [x] Add correlation ID to logs/analytics; include device info in analytics meta
 
 Release Tasks
-- [x] Update Settings > About version text to 1.9.16
-- [x] Smoke test all admin pages and public views (light/dark)
+- [x] Update Settings > About version text to 1.9.15
+- [ ] Smoke test all admin pages and public views (light/dark)
 - [ ] Verify RLS and permissions with a non-admin account
 
 SQL (DDL)
