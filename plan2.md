@@ -1,13 +1,13 @@
 # Implementation Plan (Admin + App-wide Enhancements)
 
 Owner: Admin (jayjay.r@outlook.com)
-Current version (Settings > About): 1.8.5
+Current version (Settings > About): 1.8.6
 Target version after implementation: 1.9.0
 
 Legend: [ ] pending • [x] complete • [~] partial
 
 Phase 0 — Prerequisites and Access
-- [ ] Verify Supabase env vars configured (VITE_SUPABASE_URL, VITE_SUPABASE_PUBLISHABLE_KEY)
+- [x] Verify Supabase env vars configured (VITE_SUPABASE_URL, VITE_SUPABASE_PUBLISHABLE_KEY)
 - [ ] Confirm RLS policies for app_logs, app_analytics, contact_messages (admin read; authenticated insert where needed)
 - [ ] Ensure Edge Function secrets set (SENDGRID_API_KEY, SENDGRID_FROM, CONTACT_TO, SUPABASE_SERVICE_ROLE_KEY)
 - [ ] Create/confirm tables and indexes via SQL:
@@ -64,9 +64,9 @@ Account tab
 - [ ] Improve layout with sections (Profile, Security, Data); responsive 1–2 cols; align buttons
 
 About tab
-- [ ] Remove “Contact: {email}” line
-- [ ] Show “Created by: Jamie Reddin, Version: 1.8.5” on one row
-- [ ] Move Contact button to top row actions near title
+- [x] Remove “Contact: {email}” line
+- [x] Show “Created by: Jamie Reddin, Version: 1.8.5” on one row
+- [x] Move Contact button to top row actions near title
 
 Phase 8 — Messages admin page
 - [ ] Edge function contact-send sends email; can store to contact_messages with service role
