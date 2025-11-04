@@ -172,7 +172,137 @@ export default function Admin() {
     }
   }
 
+  function convertErrorCodesToCSV(codes: ErrorCode[]): string {
+    const headers = [
+      "id",
+      "code",
+      "system_name",
+      "meaning",
+      "solution",
+      "difficulty",
+      "estimated_time",
+      "manual_url",
+      "video_url",
+      "related_codes"
+    ];
+    const escape = (val: any) => {
+      const s = val === null || val === undefined ? "" : String(val);
+      if (/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+      return s;
+    };
+    const rows = codes.map((c) => [
+      c.id,
+      c.code,
+      c.system_name,
+      c.meaning,
+      c.solution,
+      c.difficulty || "",
+      c.estimated_time || "",
+      c.manual_url || "",
+      c.video_url || "",
+      (c.related_codes || []).join("|")
+    ].map(escape).join(","));
+    return headers.join(",") + "\n" + rows.join("\n");
+  }
+
+  function parseCSV(content: string): Record<string, string>[] {
+    const lines = content.split(/\r?\n/).filter((l) => l.trim().length > 0);
+    if (lines.length === 0) return [];
+    const parseLine = (line: string): string[] => {
+      const result: string[] = [];
+      let cur = "";
+      let inQuotes = false;
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (inQuotes) {
+          if (ch === '"') {
+            if (line[i + 1] === '"') { cur += '"'; i++; } else { inQuotes = false; }
+          } else {
+            cur += ch;
+          }
+        } else {
+          if (ch === ',') { result.push(cur); cur = ""; }
+          else if (ch === '"') { inQuotes = true; }
+          else { cur += ch; }
+        }
+      }
+      result.push(cur);
+      return result;
+    };
+    const headers = parseLine(lines[0]).map((h) => h.trim());
+    return lines.slice(1).map((line) => {
+      const cols = parseLine(line);
+      const obj: Record<string, string> = {};
+      headers.forEach((h, idx) => { obj[h] = cols[idx] ?? ""; });
+      return obj;
+    });
+  }
+
+  function handleExportCSV() {
+    const csv = convertErrorCodesToCSV(errorCodes);
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `error-codes-${new Date().toISOString()}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  async function handleImportCSVFile(file: File) {
+    try {
+      const text = await file.text();
+      const rows = parseCSV(text);
+      let upserted = 0;
+      for (const row of rows) {
+        const payload: any = {
+          code: row.code || row["Error Code"] || row["error_code"],
+          system_name: row.system_name || row["system"] || row["system_name"],
+          meaning: row.meaning || row["Meaning"],
+          solution: row.solution || row["Solution"],
+          difficulty: row.difficulty || null,
+          estimated_time: row.estimated_time || null,
+          manual_url: row.manual_url || null,
+          video_url: row.video_url || null,
+          related_codes: row.related_codes ? row.related_codes.split("|").map((s) => s.trim()).filter(Boolean) : null,
+        };
+        if (!payload.code || !payload.system_name) continue;
+        // Try update then insert
+        const { data: existing } = await (supabase as any)
+          .from("error_codes_db" as any)
+          .select("id")
+          .eq("code", payload.code)
+          .eq("system_name", payload.system_name)
+          .maybeSingle();
+        if (existing?.id) {
+          const { error } = await (supabase as any)
+            .from("error_codes_db" as any)
+            .update(payload)
+            .eq("id", existing.id);
+          if (!error) upserted++;
+        } else {
+          const { error } = await (supabase as any)
+            .from("error_codes_db" as any)
+            .insert([payload]);
+          if (!error) upserted++;
+        }
+      }
+      toast({ title: "Import complete", description: `${upserted} rows processed` });
+      loadErrorCodes();
+    } catch (e: any) {
+      toast({ title: "Import failed", description: e?.message ?? String(e), variant: "destructive" });
+    }
+  }
+
+  function handleImportCSV() {
+    if (fileInputRef.current) fileInputRef.current.click();
+  }
+
   async function handleDelete(id: string) {
+    if (!isAdmin) {
+      toast({ title: "Insufficient permissions", description: "Only admins can delete codes", variant: "destructive" });
+      return;
+    }
     if (!confirm("Are you sure you want to delete this error code?")) return;
 
     const { error } = await (supabase as any)
