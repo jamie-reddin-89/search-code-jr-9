@@ -1,8 +1,8 @@
 # Implementation Plan (Admin + App-wide Enhancements)
 
 Owner: Admin (jayjay.r@outlook.com)
-Current version (Settings > About): 1.9.9
-Target version after implementation: 1.9.9
+Current version (Settings > About): 1.9.10
+Target version after implementation: 1.9.10
 
 Legend: [ ] pending • [x] complete • [~] partial
 
@@ -57,17 +57,17 @@ Phase 6 — Dynamic device subpages and per-model codes
 
 Phase 7 — Settings improvements
 General tab (src/components/Settings.tsx)
-- [ ] Wrap in bordered, rounded container
-- [ ] Add Save button to persist the group (offlineMode, notifications, tooltips, slimLineMode) at once
-- [ ] Add suggested settings: default landing model, units (°C/°F, currency), language, data saver, confirm-on-delete
+- [x] Wrap in bordered, rounded container
+- [x] Add Save button to persist the group (offlineMode, notifications, tooltips, slimLineMode) at once
+- [x] Add suggested settings: default landing model, units (°C/°F, currency), language, data saver, confirm-on-delete
 
 Account tab
-- [ ] Improve layout with sections (Profile, Security, Data); responsive 1–2 cols; align buttons
+- [x] Improve layout with sections (Profile, Security, Data); responsive 1–2 cols; align buttons
 
 About tab
-- [ ] Remove “Contact: {email}” line
-- [ ] Show “Created by: Jamie Reddin, Version: 1.8.5” on one row
-- [ ] Move Contact button to top row actions near title
+- [x] Remove “Contact: {email}” line
+- [x] Show “Created by: Jamie Reddin, Version: 1.9.10” on one row
+- [x] Move Contact button to top row actions near title
 
 Phase 8 — Messages admin page
 - [ ] Edge function contact-send sends email; can store to contact_messages with service role
@@ -90,7 +90,7 @@ Phase 10 — Performance and quality
 - [ ] Add correlation ID to logs/analytics; include device info in analytics meta
 
 Release Tasks
-- [x] Update Settings > About version text to 1.9.9
+- [x] Update Settings > About version text to 1.9.10
 - [ ] Smoke test all admin pages and public views (light/dark)
 - [ ] Verify RLS and permissions with a non-admin account
 
