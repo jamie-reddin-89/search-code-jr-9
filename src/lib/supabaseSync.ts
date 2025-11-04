@@ -16,17 +16,20 @@ export async function syncEvents() {
       id: e.id,
       user_id: e.userId || null,
       device_id: e.deviceId,
-      type: e.type,
+      event_type: e.type,
       path: e.path,
-      ts: new Date(e.ts).toISOString(),
-      geo_lat: e.geo?.lat ?? null,
-      geo_lon: e.geo?.lon ?? null,
-      meta: e.meta || null,
+      timestamp: new Date(e.ts).toISOString(),
+      meta: {
+        geo_lat: e.geo?.lat ?? null,
+        geo_lon: e.geo?.lon ?? null,
+        ...e.meta
+      } || null,
     }));
-    await (supabase as any).from("user_events" as any).insert(payload);
+    await (supabase as any).from("app_analytics" as any).insert(payload);
     writeLS(LS_EVENTS, []);
   } catch (err) {
-    // keep in queue on failure
+    // keep in queue on failure - silently fail to prevent app crash
+    console.debug("Event sync failed (non-critical):", err);
   }
 }
 
@@ -38,15 +41,16 @@ export async function syncLogs() {
       id: l.id,
       level: l.level,
       message: l.message,
-      ts: new Date(l.ts).toISOString(),
-      stack: l.stack || null,
+      stack_trace: l.stack ? { stack: l.stack } : null,
       meta: l.meta || null,
+      timestamp: new Date(l.ts).toISOString(),
     }));
     await (supabase as any).from("app_logs" as any).insert(payload);
     // clear after successful insert
     localStorage.setItem("jr_app_logs", JSON.stringify([]));
   } catch (err) {
-    // keep local
+    // keep local - silently fail to prevent app crash
+    console.debug("Log sync failed (non-critical):", err);
   }
 }
 
@@ -64,8 +68,10 @@ export async function syncFixSteps() {
       tags: s.tags || [],
       media_urls: s.mediaUrls || [],
     })));
+    writeLS(LS_FIX_STEPS, []);
   } catch (err) {
-    // ignore
+    // keep in queue on failure - silently fail to prevent app crash
+    console.debug("Fix steps sync failed (non-critical):", err);
   }
 }
 
@@ -82,8 +88,10 @@ export async function syncErrorInfo() {
       meaning: i.meaning||null,
       solution: i.solution||null,
     })));
+    writeLS(LS_ERROR_META, []);
   } catch (err) {
-    // ignore
+    // keep in queue on failure - silently fail to prevent app crash
+    console.debug("Error metadata sync failed (non-critical):", err);
   }
 }
 

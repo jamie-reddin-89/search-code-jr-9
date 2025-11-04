@@ -9,7 +9,10 @@ export default function SyncBridge() {
       try {
         await supabase.auth.getSession();
         await syncAll();
-      } catch {}
+      } catch (error) {
+        // Silently fail - sync is non-critical
+        console.debug("Data sync failed (non-critical):", error);
+      }
     };
     kick();
     timer = window.setInterval(kick, 15000);
