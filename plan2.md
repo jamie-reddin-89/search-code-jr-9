@@ -7,7 +7,7 @@ Target version after implementation: 1.9.0
 Legend: [ ] pending • [x] complete • [~] partial
 
 Phase 0 — Prerequisites and Access
-- [x] Verify Supabase env vars configured (VITE_SUPABASE_URL, VITE_SUPABASE_PUBLISHABLE_KEY)
+- [ ] Verify Supabase env vars configured (VITE_SUPABASE_URL, VITE_SUPABASE_PUBLISHABLE_KEY)
 - [ ] Confirm RLS policies for app_logs, app_analytics, contact_messages (admin read; authenticated insert where needed)
 - [ ] Ensure Edge Function secrets set (SENDGRID_API_KEY, SENDGRID_FROM, CONTACT_TO, SUPABASE_SERVICE_ROLE_KEY)
 - [ ] Create/confirm tables and indexes via SQL:
@@ -15,7 +15,7 @@ Phase 0 — Prerequisites and Access
   - [ ] error_codes_db brand_id/model_id columns + index (optional but recommended)
 
 Phase 1 — Admin insert flows + app-wide propagation
-- [x] AdminAddDevice inserts into brands/models/categories/tags/media/urls (src/pages/AdminAddDevice.tsx)
+- [ ] AdminAddDevice inserts into brands/models/categories/tags/media/urls (src/pages/AdminAddDevice.tsx)
 - [ ] Add realtime subscriptions for categories/tags/media/urls (deviceManager.subscribe pattern)
 - [ ] Replace hardcoded systemNames in Admin error-code form with dynamic model list from Supabase (src/pages/Admin.tsx)
 - [ ] Use generateRouteSlug(brand, model) or model.id as value; label “Brand — Model”
@@ -29,21 +29,21 @@ Phase 2 — Users list shows all signed-up users
 - [ ] Add refresh and error states using toast; confirm new signups appear
 
 Phase 3 — App-wide logging with live updates
-- [x] Logger utilities (logInfo/logWarn/logError/getLogs/etc.) exist (src/lib/logger.ts)
-- [x] Admin logs page exists (src/pages/AdminAppLogs.tsx)
+- [ ] Logger utilities (logInfo/logWarn/logError/getLogs/etc.) exist (src/lib/logger.ts)
+- [ ] Admin logs page exists (src/pages/AdminAppLogs.tsx)
 - [ ] Add Supabase realtime subscription on app_logs; append new entries live and update stats
 - [ ] Wire global handlers: window.onerror/unhandledrejection -> logError (src/components/AnalyticsListener.tsx)
 - [ ] Optional: Add React ErrorBoundary to capture render errors and logError
 
 Phase 4 — Analytics capture + Admin analytics
-- [x] app_analytics + search_analytics tables available (types present)
+- [ ] app_analytics + search_analytics tables available (types present)
 - [ ] Switch AnalyticsListener to lib/analytics.trackEvent/trackPageView/trackClick (src/components/AnalyticsListener.tsx)
-- [~] Search tracking writes to search_analytics (present) and should also call lib/analytics.trackEvent("search") (src/hooks/useAnalytics.ts) — verify
+- [ ] Search tracking writes to search_analytics (present) and should also call lib/analytics.trackEvent("search") (src/hooks/useAnalytics.ts) — verify
 - [ ] Ensure AdminAnalytics uses getAnalyticsStats (already) and events flow end-to-end
 - [ ] Optional: record user_sessions/user_activity on login/logout/page views
 
 Phase 5 — UI consistency, themes, scrollbars
-- [x] Shared classes exist (.nav-button, .home-button, .page-container) (src/index.css)
+- [ ] Shared classes exist (.nav-button, .home-button, .page-container) (src/index.css)
 - [ ] Audit pages to ensure consistent usage of bg-background/text-foreground/border
 - [ ] Extend global CSS to hide visual scrollbars while allowing scroll for body and scroll regions
 - [ ] Verify light: light background + dark text; dark: dark background + light text; fix outliers
@@ -69,7 +69,7 @@ About tab
 - [ ] Move Contact button to top row actions near title
 
 Phase 8 — Messages admin page
-- [x] Edge function contact-send sends email; can store to contact_messages with service role
+- [ ] Edge function contact-send sends email; can store to contact_messages with service role
 - [ ] Create src/pages/AdminMessages.tsx to list contact_messages with filters and details
 - [ ] Add route /admin/messages and nav button in Admin dashboard (src/pages/Admin.tsx)
 - [ ] Add realtime subscription on contact_messages to live-update list
