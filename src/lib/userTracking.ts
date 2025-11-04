@@ -260,42 +260,46 @@ export async function resetUserPassword(email: string): Promise<boolean> {
 }
 
 /**
- * Get all users with their role info
+ * Get all users with their role info and auth details
  */
 export async function getAllUsers(): Promise<any[]> {
   try {
-    // Try to call the admin-users edge function first
-    const { data: sessionData } = await supabase.auth.getSession();
-    if (sessionData?.session?.access_token) {
-      try {
-        const supabaseUrl = new URL(import.meta.env.VITE_SUPABASE_URL);
-        const functionUrl = `${supabaseUrl.protocol}//${supabaseUrl.hostname}/functions/v1/admin-users`;
-
-        const response = await fetch(functionUrl, {
-          method: "GET",
-          headers: {
-            "Authorization": `Bearer ${sessionData.session.access_token}`,
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          return data.users || [];
-        }
-      } catch (error) {
-        console.warn("Error calling admin-users function, falling back to user_roles:", error);
-      }
-    }
-
-    // Fallback to user_roles table
-    const { data, error } = await supabase
+    // Fetch user_roles table
+    const { data: userRoles, error: rolesError } = await supabase
       .from("user_roles" as any)
       .select("*")
       .order("created_at", { ascending: false });
 
-    if (error) throw error;
-    return data || [];
+    if (rolesError) throw rolesError;
+
+    const roles = userRoles || [];
+    if (roles.length === 0) return [];
+
+    // Fetch profiles to get email and created_at from auth
+    const { data: profiles, error: profilesError } = await supabase
+      .from("profiles" as any)
+      .select("*");
+
+    if (profilesError) {
+      console.warn("Error fetching profiles:", profilesError);
+    }
+
+    const profileMap = new Map((profiles || []).map((p: any) => [p.id, p]));
+
+    // Combine user_roles with profile data to get email and auth timestamps
+    const enrichedUsers = roles.map((role: any) => {
+      const profile = profileMap.get(role.user_id);
+      return {
+        id: role.id,
+        user_id: role.user_id,
+        email: profile?.email,
+        created_at: role.created_at || profile?.created_at,
+        role: role.role,
+        banned: role.banned || false,
+      };
+    });
+
+    return enrichedUsers;
   } catch (error) {
     console.error("Error fetching users:", error);
     return [];
