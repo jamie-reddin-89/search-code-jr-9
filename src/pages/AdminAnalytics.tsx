@@ -310,6 +310,41 @@ export default function AdminAnalytics() {
                 </div>
               </div>
             )}
+
+            {/* Real-time Recent Events */}
+            {recentEvents.length > 0 && (
+              <div className="border rounded p-4 bg-muted/30">
+                <h2 className="font-semibold text-lg mb-4 flex items-center gap-2">
+                  <span className="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                  Recent Events (Live)
+                </h2>
+                <div className="space-y-2 max-h-96 overflow-y-auto">
+                  {recentEvents.slice(0, 20).map((event) => (
+                    <div
+                      key={event.id}
+                      className="p-2 border rounded text-sm bg-background hover:bg-muted/50 transition-colors"
+                    >
+                      <div className="flex justify-between items-start gap-2">
+                        <div className="flex-1">
+                          <span className="font-medium">{event.event_type}</span>
+                          {event.path && (
+                            <div className="text-xs text-muted-foreground truncate mt-1">{event.path}</div>
+                          )}
+                          {event.meta && (
+                            <div className="text-xs text-muted-foreground mt-1">
+                              {JSON.stringify(event.meta).substring(0, 100)}
+                            </div>
+                          )}
+                        </div>
+                        <span className="text-xs text-muted-foreground whitespace-nowrap">
+                          {new Date(event.timestamp).toLocaleTimeString()}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </>
       )}
