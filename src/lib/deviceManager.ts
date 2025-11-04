@@ -52,9 +52,10 @@ export async function getAllDevices(): Promise<DeviceWithBrand[]> {
 
     if (modelsError) {
       const mErrMsg = (modelsError as any)?.message ?? JSON.stringify(modelsError);
-      throw new Error(`Error querying 'models' table: ${mErrMsg}`);
+      console.warn("Error querying 'models' table, returning empty list:", mErrMsg);
+      return [];
     }
-    if (!models) return [];
+    if (!models || (Array.isArray(models) && models.length === 0)) return [];
 
     const { data: brands, error: brandsError } = await supabase
       .from("brands" as any)
