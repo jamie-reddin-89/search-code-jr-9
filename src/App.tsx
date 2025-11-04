@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import Favorites from "./pages/Favorites";
 import Admin from "./pages/Admin";
 import AdminUsers from "./pages/AdminUsers";
+import AdminMessages from "./pages/AdminMessages";
 import AdminAnalytics from "./pages/AdminAnalytics";
 import AdminFixSteps from "./pages/AdminFixSteps";
 import AdminAppLogs from "./pages/AdminAppLogs";
