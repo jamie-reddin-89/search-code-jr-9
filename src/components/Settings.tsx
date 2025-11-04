@@ -20,7 +20,7 @@ import ContactForm from '@/components/ContactForm';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { getAllDevices, generateRouteSlug } from "@/lib/deviceManager";
 
-const APP_VERSION = "1.9.14";
+const APP_VERSION = "1.9.15";
 
 type DeviceOption = { id: string; brandName: string; modelName: string; slug: string };
 
