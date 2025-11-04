@@ -18,7 +18,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { getAnalyticsStats, type AnalyticsStats } from "@/lib/analytics";
+import { getAnalyticsStats, subscribeToAnalytics, type AnalyticsStats, type AnalyticsEvent } from "@/lib/analytics";
 import { useToast } from "@/hooks/use-toast";
 
 const COLORS = [
