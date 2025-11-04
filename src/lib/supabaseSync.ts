@@ -45,7 +45,7 @@ export async function syncLogs() {
       meta: l.meta || null,
       timestamp: new Date(l.ts).toISOString(),
     }));
-    await (supabase as any).from("app_logs" as any).insert(payload);
+    await retryWithBackoff(() => (supabase as any).from("app_logs" as any).insert(payload), 3, 500);
     // clear after successful insert
     localStorage.setItem("jr_app_logs", JSON.stringify([]));
   } catch (err) {
