@@ -24,6 +24,8 @@ export interface AnalyticsStats {
 /**
  * Track an analytics event to Supabase
  */
+import { retryWithBackoff } from "./retry";
+
 export async function trackEvent(
   eventType: string,
   path?: string,
@@ -39,18 +41,43 @@ export async function trackEvent(
         ? window.localStorage.getItem("device_id") || generateDeviceId()
         : null;
 
-    await supabase.from("app_analytics" as any).insert([
+    const payload = [
       {
         user_id: user?.id || null,
         device_id: deviceId,
         event_type: eventType,
-        path: path || window.location.pathname,
+        path: path || (typeof window !== "undefined" ? window.location.pathname : null),
         meta: meta || null,
         timestamp: new Date().toISOString(),
       },
-    ]);
+    ];
+
+    // Try with retry/backoff
+    await retryWithBackoff(() => (supabase as any).from("app_analytics" as any).insert(payload), 3, 500);
   } catch (error) {
-    console.error("Failed to track event:", error);
+    console.error("Failed to track event after retries:", error);
+
+    // Enqueue to localStorage queue for later sync
+    try {
+      if (typeof window !== "undefined") {
+        const key = "jr_user_events";
+        const raw = window.localStorage.getItem(key);
+        const list = raw ? JSON.parse(raw) : [];
+        // store minimal event representation
+        list.push({
+          id: `evt_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          userId: (await supabase.auth.getUser()).data.user?.id || null,
+          deviceId: deviceId || null,
+          type: eventType,
+          path: path || (typeof window !== "undefined" ? window.location.pathname : null),
+          meta: meta || null,
+          ts: Date.now(),
+        });
+        window.localStorage.setItem(key, JSON.stringify(list));
+      }
+    } catch (err) {
+      console.error("Failed to enqueue analytics event:", err);
+    }
   }
 }
 
