@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import Favorites from "./pages/Favorites";
 import Admin from "./pages/Admin";
 import AdminUsers from "./pages/AdminUsers";
+import AdminMessages from "./pages/AdminMessages";
 import AdminAnalytics from "./pages/AdminAnalytics";
 import AdminFixSteps from "./pages/AdminFixSteps";
 import AdminAppLogs from "./pages/AdminAppLogs";
@@ -58,6 +59,7 @@ const App = () => (
               <Route path="/favorites" element={<Favorites />} />
               <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
               <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
+              <Route path="/admin/messages" element={<AdminRoute><AdminMessages /></AdminRoute>} />
               <Route path="/admin/analytics" element={<AdminRoute><AdminAnalytics /></AdminRoute>} />
               <Route path="/admin/fix-steps" element={<AdminRoute><AdminFixSteps /></AdminRoute>} />
               <Route path="/admin/app-logs" element={<AdminRoute><AdminAppLogs /></AdminRoute>} />

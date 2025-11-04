@@ -1,17 +1,17 @@
 # Implementation Plan (Admin + App-wide Enhancements)
 
 Owner: Admin (jayjay.r@outlook.com)
-Current version (Settings > About): 1.8.5
+Current version (Settings > About): 1.9.0
 Target version after implementation: 1.9.0
 
 Legend: [ ] pending • [x] complete • [~] partial
 
 Phase 0 — Prerequisites and Access
-- [ ] Verify Supabase env vars configured (VITE_SUPABASE_URL, VITE_SUPABASE_PUBLISHABLE_KEY)
-- [ ] Confirm RLS policies for app_logs, app_analytics, contact_messages (admin read; authenticated insert where needed)
-- [ ] Ensure Edge Function secrets set (SENDGRID_API_KEY, SENDGRID_FROM, CONTACT_TO, SUPABASE_SERVICE_ROLE_KEY)
-- [ ] Create/confirm tables and indexes via SQL:
-  - [ ] contact_messages table (DDL below)
+- [x] Verify Supabase env vars configured (VITE_SUPABASE_URL, VITE_SUPABASE_PUBLISHABLE_KEY)
+- [x] Confirm RLS policies for app_logs, app_analytics, contact_messages (admin read; authenticated insert where needed)
+- [~] Ensure Edge Function secrets set (SENDGRID_API_KEY, SENDGRID_FROM, CONTACT_TO, SUPABASE_SERVICE_ROLE_KEY) — Changed to direct table insert
+- [x] Create/confirm tables and indexes via SQL:
+  - [x] contact_messages table (DDL below)
   - [ ] error_codes_db brand_id/model_id columns + index (optional but recommended)
 
 Phase 1 — Admin insert flows + app-wide propagation

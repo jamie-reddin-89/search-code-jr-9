@@ -38,16 +38,22 @@ export default function ContactForm() {
 
     setLoading(true);
     try {
-      const payload = { name: name.trim(), email: email.trim(), subject: subject.trim(), message: message.trim() };
-      const { data, error } = await (supabase as any).functions.invoke("contact-send", { body: payload });
+      const { error } = await (supabase as any)
+        .from("contact_messages")
+        .insert([{
+          name: name.trim(),
+          email: email.trim(),
+          subject: subject.trim(),
+          message: message.trim(),
+        }]);
+
       if (error) throw error;
-      if (data?.error) throw new Error(data.error);
 
       toast({ title: "Message sent", description: "Thanks — we'll respond soon." });
       reset();
       setOpen(false);
     } catch (err: any) {
-      console.error("Contact send error:", err);
+      console.error("Contact submit error:", err);
       toast({ title: "Send failed", description: err?.message ?? String(err), variant: "destructive" });
     } finally {
       setLoading(false);

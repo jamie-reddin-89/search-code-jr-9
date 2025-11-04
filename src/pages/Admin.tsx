@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Home, Plus, Edit, Trash2, Users, BarChart3, Wrench, ScrollText, FilePlus2, Package } from "lucide-react";
+import { Home, Plus, Edit, Trash2, Users, BarChart3, Wrench, ScrollText, FilePlus2, Package, Mail } from "lucide-react";
 import TopRightControls from "@/components/TopRightControls";
 import { supabase } from "@/integrations/supabase/client";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -235,6 +235,10 @@ export default function Admin() {
         <Link to="/admin/users" className="nav-button flex items-center justify-center gap-2">
           <Users size={20} />
           Users
+        </Link>
+        <Link to="/admin/messages" className="nav-button flex items-center justify-center gap-2">
+          <Mail size={20} />
+          Messages
         </Link>
         <Link to="/admin/analytics" className="nav-button flex items-center justify-center gap-2">
           <BarChart3 size={20} />
