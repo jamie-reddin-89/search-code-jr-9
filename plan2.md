@@ -89,7 +89,7 @@ Phase 10 — Performance and quality
 - [ ] Add correlation ID to logs/analytics; include device info in analytics meta
 
 Release Tasks
-- [x] Update Settings > About version text to 1.9.2
+- [x] Update Settings > About version text to 1.9.7
 - [ ] Smoke test all admin pages and public views (light/dark)
 - [ ] Verify RLS and permissions with a non-admin account
 
